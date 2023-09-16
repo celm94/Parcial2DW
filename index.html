@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Layout con CSS Grid</title>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="menu">Menú
+            <br>
+            
+                <button id="tablaBtn">a.Tabla</button><br>
+                <button id="cardsBtn">b.Cards</button><br>
+                <button id="cargaBtn">c.Carga Dinámica</button><br>
+            
+        </div>
+        <div class="content">Contenido</div>
+        <div class="footer">Footer</div>
+    </div>
+
+    <script>
+        //BOTONES*****************************************************************************************************
+
+        const tablaBtn = document.getElementById("tablaBtn");
+        const cardsBtn = document.getElementById("cardsBtn");
+        const cargaBtn = document.getElementById("cargaBtn");
+
+
+    
+        //EVENTOS DE CADA BOTÓN****************************************************************************************
+        tablaBtn.addEventListener("click", mostrarTabla);
+        cardsBtn.addEventListener("click", mostrarCards);
+        cargaBtn.addEventListener("click", cargarDinamicamente);
+    
+        //BOTÓN MOSTRAR TABLA FUNCIÓN***********************************************************************************
+        function mostrarTabla() {
+    const content = document.querySelector(".content");
+
+       //**********************  formulario  ***************************************************************************
+    const tableContainer = document.createElement("div");
+    tableContainer.innerHTML = `
+        <h2>Tabla</h2>
+        <form id="formularioTabla">
+            <input type="text" id="nuevoDato1" placeholder="Nuevo Dato 1">
+            <input type="text" id="nuevoDato2" placeholder="Nuevo Dato 2">
+            <button type="button" id="guardarTablaBtn">Guardar</button>
+        </form>
+        <table id="miTabla">
+            <tr>
+                <th>Nombre</th>
+                <th>Carnet</th>
+            </tr>
+            <tr>
+                <td>Alumno 1 ejmplo</td>
+                <td>Alumno 2 ejemplo</td>
+            </tr>
+        </table>
+        `;
+
+    content.innerHTML = ''; // Limpiar el contenido existente
+    content.appendChild(tableContainer);
+
+    //EVENTO BOTÓN GUARDAR*****************************************************************************************************
+    const guardarTablaBtn = document.getElementById("guardarTablaBtn");
+    guardarTablaBtn.addEventListener("click", agregarFilaATabla);
+}
+
+    // Función para agregar una nueva fila a la tabla
+    function agregarFilaATabla() {
+        const nuevoDato1 = document.getElementById("nuevoDato1").value;
+        const nuevoDato2 = document.getElementById("nuevoDato2").value;
+        const tabla = document.getElementById("miTabla");
+
+    // Crear una nueva fila y agregar los datos a la tabla
+        const newRow = tabla.insertRow();
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        cell1.innerHTML = nuevoDato1;
+        cell2.innerHTML = nuevoDato2;
+
+    // Limpiar los campos del formulario después de guardar
+    document.getElementById("nuevoDato1").value = "";
+    document.getElementById("nuevoDato2").value = "";
+}
+
+        // Función para mostrar tarjetas (cards)
+        function mostrarCards() {
+    const content = document.querySelector(".content");
+    content.innerHTML = `
+        <h2>Cards</h2>
+        <div class="column" id="column1"></div>
+        <div class="column" id="column2"></div>
+        <div class="column" id="column3"></div>
+    `;
+
+    // Agregar tarjetas a cada columna
+    for (let i = 1; i <= 6; i++) {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.draggable = true;
+        card.textContent = `Tarjeta ${i}`;
+        
+        // Agregar un evento para el arrastre de las tarjetas
+        card.addEventListener("dragstart", dragStart);
+        
+        // Agregar la tarjeta a una columna
+        const columnId = `column${i % 3 + 1}`;
+        const column = document.getElementById(columnId);
+        column.appendChild(card);
+    }
+}
+
+    
+        // Función para cargar contenido dinámicamente
+        function cargarDinamicamente() {
+    const content = document.querySelector(".content");
+    content.innerHTML = "<h2>Carga Dinámica</h2><h3>A partir de este momento:</h3><p>el color del background comenzará a cambiar cada 5 segundos</p>";
+
+    // Crear un elemento <script> dinámicamente
+    const scriptElement = document.createElement("script");
+    scriptElement.src = "tu-archivo-dinamico.js"; // Reemplaza con la URL de tu archivo JS
+
+    // Agregar el elemento <script> al final del cuerpo (body)
+    document.body.appendChild(scriptElement);
+
+    // Cambiar el fondo de la pantalla de forma aleatoria cada 5 segundos
+    setInterval(cambiarFondoAleatoriamente, 5000);
+}
+
+function cambiarFondoAleatoriamente() {
+    const colores = ["#FF5733", "#33FF57", "#5733FF", "#FF33AA", "#33AAFF", "#AA33FF"];
+    const colorAleatorio = colores[Math.floor(Math.random() * colores.length)];
+
+    document.body.style.backgroundColor = colorAleatorio;
+}
+
+
+        
+        
+        
+//FUNCIONALIDADES para el movimiento de las tarjetas----------------------------------------------------------    
+        let draggedCard = null;
+
+function dragStart(e) {
+    draggedCard = this;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", null);
+    this.classList.add("dragging");
+}
+
+document.addEventListener("dragover", function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener("drop", function(e) {
+    if (draggedCard) {
+        e.preventDefault();
+        draggedCard.parentNode.removeChild(draggedCard);
+        e.target.appendChild(draggedCard);
+        draggedCard.classList.remove("dragging");
+        draggedCard = null;
+    }
+});
+
+</script>
+</body>
+</html>
